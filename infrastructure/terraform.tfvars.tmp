@@ -1,0 +1,4 @@
+# You must input your informations in this file
+
+# Here goes your azure microsoft subscription id
+subscription_id = "replace_this_string"
