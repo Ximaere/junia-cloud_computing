@@ -23,3 +23,8 @@ variable "container_access_type" {
   type        = string
   default     = "blob"
 }
+
+variable "blob_storage_subnet_id" {
+  description = "L'ID du sous-réseau utilisé pour le Private Endpoint du Blob Storage"
+  type        = string
+}

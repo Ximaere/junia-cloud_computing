@@ -2,3 +2,7 @@
 
 # Here goes your azure microsoft subscription id
 subscription_id = "replace_this_string"
+
+# Here you need to put your database's admin login and password
+administrator_login = "replace_this_string"
+administrator_password = "replace_this_string"

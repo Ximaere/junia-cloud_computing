@@ -1,3 +1,7 @@
+# Group members
+
+Enzo BAREA, Clément GORSE, Noé MUANZA
+
 # Examples API
 
 Simple API that returns example records from a database.
@@ -6,6 +10,7 @@ Simple API that returns example records from a database.
 
 - you need to install [uv](https://docs.astral.sh/uv/guides/install-python/)
 - you must have a PostgreSQL instance available with an `example` table
+- you must delete the `.tmp` from the `/infrastructure/terraform.tfvars.tmp` and replace the dummy strings with your own informations
 
 ## Installation
 
@@ -44,3 +49,4 @@ They go on:
 - http://localhost:8000/docs
 - http://localhost:8000/
 - http://localhost:8000/examples
+

@@ -27,7 +27,7 @@ variable "resource_group_name" {
 }
 
 #####################################
-########## APP SERVICE ##############
+########### APP SERVICE #############
 #####################################
 
 # App Service name
@@ -69,4 +69,26 @@ variable "container_access_type" {
   description = "Access type for the Blob Storage Container (private, blob, or container)"
   type        = string
   default     = "blob"
+}
+
+#####################################
+########### POSTGRESQL ##############
+#####################################
+
+variable "postgresql_server_name" {
+  description = "Name of the database"
+  type        = string
+  default     = "example-postgresql"
+}
+
+variable "administrator_login" {
+  description = "Login for the database"
+  type        = string
+  sensitive   = true
+}
+
+variable "administrator_password" {
+  description = "Login for the database"
+  type        = string
+  sensitive   = true
 }

@@ -22,5 +22,12 @@ resource "azurerm_app_service" "app_service" {
 
   app_settings = {
     WEBSITE_RUN_FROM_PACKAGE = "1"
+    WEBSITE_VNET_ROUTE_ALL   = "1" # Enable vNet integration
   }
+}
+
+# Intégration de l'App Service avec le VNet
+resource "azurerm_app_service_virtual_network_swift_connection" "example" {
+  app_service_id = azurerm_app_service.app_service.id
+  subnet_id      = module.vnet.app_service_subnet_id
 }

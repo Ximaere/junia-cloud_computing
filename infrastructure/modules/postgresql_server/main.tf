@@ -8,7 +8,6 @@ resource "azurerm_postgresql_flexible_server" "postgresql_server" {
   sku_name = var.sku_name
 
   storage_mb            = var.storage_mb
-  version               = var.version
   delegated_subnet_id   = var.delegated_subnet_id
   backup_retention_days = var.backup_retention_days
 
@@ -21,4 +20,18 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "postgresql_firewall
   server_id                = azurerm_postgresql_flexible_server.postgresql_server.id
   start_ip_address         = var.allowed_ip_ranges[count.index]
   end_ip_address           = var.allowed_ip_ranges[count.index]
+}
+
+resource "azurerm_private_endpoint" "database_endpoint" {
+  name                = "database-private-endpoint"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = module.vnet.database_subnet_id
+
+  private_service_connection {
+    name                           = "database-connection"
+    private_connection_resource_id = azurerm_storage_account.storage_account.id
+    subresource_names              = ["database"]
+    is_manual_connection = false
+  }
 }

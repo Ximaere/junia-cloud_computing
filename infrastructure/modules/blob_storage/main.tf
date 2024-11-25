@@ -22,3 +22,17 @@ resource "azurerm_storage_blob" "quotes_blob" {
   storage_container_name = azurerm_storage_container.storage_container.name
   type                   = "Block"
 }
+
+resource "azurerm_private_endpoint" "blob_endpoint" {
+  name                = "blob-private-endpoint"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = module.vnet.blob_storage_subnet_id
+
+  private_service_connection {
+    name                           = "blob-connection"
+    private_connection_resource_id = azurerm_storage_account.storage_account.id
+    subresource_names              = ["blob"]
+    is_manual_connection = false
+  }
+}
