@@ -32,8 +32,8 @@ module "blob_storage" {
 
 module "postgresql_server" {
   source                 = "./modules/postgresql_server"
-  resource_group_name    = azurerm_resource_group.example.name
-  location               = azurerm_resource_group.example.location
+  resource_group_name    = azurerm_resource_group.main.name
+  location               = azurerm_resource_group.main.location
   postgresql_server_name = var.postgresql_server_name
   administrator_login    = var.administrator_login
   administrator_password = var.administrator_password
