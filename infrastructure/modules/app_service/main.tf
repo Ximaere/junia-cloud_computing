@@ -17,7 +17,6 @@ resource "azurerm_linux_web_app" "app_service" {
 
   site_config {
     always_on       = true
-    linux_fx_version = var.linux_fx_version
   }
 
   app_settings = {
@@ -28,5 +27,5 @@ resource "azurerm_linux_web_app" "app_service" {
 # Intégration de l'App Service avec le VNet
 resource "azurerm_app_service_virtual_network_swift_connection" "example" {
   app_service_id = azurerm_linux_web_app.app_service.id
-  subnet_id      = module.vnet.app_service_subnet_id
+  subnet_id      = var.service_app_subnet_id
 }

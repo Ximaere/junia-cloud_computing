@@ -12,3 +12,8 @@ output "blob_storage_subnet_id" {
   description = "The ID of the subnet for the Blob Storage"
   value       = azurerm_subnet.blob_storage_subnet.id
 }
+
+output "database_subnet_id" {
+  description = "The ID of the subnet for the Blob Storage"
+  value       = azurerm_subnet.blob_storage_subnet.id
+}

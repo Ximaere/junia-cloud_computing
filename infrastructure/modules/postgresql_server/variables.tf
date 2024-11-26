@@ -56,3 +56,18 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "database_subnet_id" {
+  description = "The ID of the subnet for the private endpoint"
+  type        = string
+}
+
+variable "storage_account_id" {
+  description = "The ID of the storage account to be used for private connection"
+  type        = string
+}
+
+variable "virtual_network_id" {
+  description = "The ID of the virtuan network"
+  type        = string
+}

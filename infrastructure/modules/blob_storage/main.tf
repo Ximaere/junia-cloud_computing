@@ -27,7 +27,7 @@ resource "azurerm_private_endpoint" "blob_endpoint" {
   name                = "blob-private-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = module.vnet.blob_storage_subnet_id
+  subnet_id           = var.blob_storage_subnet_id
 
   private_service_connection {
     name                           = "blob-connection"

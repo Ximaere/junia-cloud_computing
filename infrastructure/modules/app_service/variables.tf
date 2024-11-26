@@ -22,3 +22,8 @@ variable "linux_fx_version" {
   description = "Runtime stack for the App Service (e.g., NODE|14-lts)"
   type        = string
 }
+
+variable "service_app_subnet_id" {
+  description = "The ID of the subnet to associate with the app service"
+  type        = string
+}

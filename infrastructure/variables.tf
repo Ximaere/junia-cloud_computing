@@ -34,12 +34,12 @@ variable "resource_group_name" {
 variable "app_service_name" {
   description = "The name of the App Service"
   type        = string
-  default     = "juniacloudcomputingappservicebgm2" 
+  default     = "juniacloudcomputingappservicebgm" 
 }
 variable "service_plan_name" {
   description = "The name of the App Service Plan"
   type        = string
-  default     = "juniacloudcomputingappserviceplanbgm2" 
+  default     = "juniacloudcomputingappserviceplanbgm" 
 }
 variable "linux_fx_version" {
   description = "Runtime stack for the App Service (e.g., NODE|14-lts)"
@@ -55,7 +55,7 @@ variable "linux_fx_version" {
 variable "storage_account_name" {
   description = "The name of the Storage Account"
   type        = string
-  default     = "juniacloudstoragebgm2"
+  default     = "juniacloudstoragebgm"
 }
 
 # Storage Container
@@ -78,7 +78,7 @@ variable "container_access_type" {
 variable "postgresql_server_name" {
   description = "Name of the database"
   type        = string
-  default     = "example-postgresql"
+  default     = "juniapostgresqlbgm2"
 }
 
 variable "administrator_login" {
