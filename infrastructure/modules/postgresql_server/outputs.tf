@@ -1,14 +1,17 @@
-output "postgresql_server_id" {
-  description = "ID of the PostgreSQL flexible server"
-  value       = azurerm_postgresql_flexible_server.postgresql_server.id
+output "server_name" {
+  value       = azurerm_postgresql_flexible_server.postgresql_server.name
+  description = "The name of the PostgreSQL Flexible Server."
 }
 
-output "postgresql_server_fqdn" {
-  description = "Fully qualified domain name (FQDN) of the PostgreSQL server"
-  value       = azurerm_postgresql_flexible_server.postgresql_server.fqdn
+output "database_name" {
+  value       = azurerm_postgresql_flexible_server_database.postgresql_database.name
+  description = "The name of the database created on the PostgreSQL Flexible Server."
 }
 
-output "postgresql_server_administrator_login" {
-  description = "Administrator login name of the PostgreSQL server"
-  value       = azurerm_postgresql_flexible_server.postgresql_server.administrator_login
+output "postgresql_host" {
+  value = azurerm_postgresql_flexible_server.postgresql_server.fqdn
+}
+
+output "postgresql_port" {
+  value = 5432
 }

@@ -1,73 +1,55 @@
+variable "server_name" {
+  description = "The name of the PostgreSQL server."
+  type        = string
+}
+
 variable "resource_group_name" {
-  description = "Name of the resource group in which to create the PostgreSQL server"
+  description = "The name of the resource group where the PostgreSQL Flexible Server will be created."
   type        = string
 }
 
 variable "location" {
-  description = "Azure region where the PostgreSQL server will be created"
+  description = "The Azure location/region where the resources will be deployed (e.g., West Europe, East US)."
   type        = string
 }
 
-variable "postgresql_server_name" {
-  description = "Name of the PostgreSQL flexible server"
+variable "admin_login" {
+  description = "The administrator login for the PostgreSQL Flexible Server."
   type        = string
 }
 
-variable "administrator_login" {
-  description = "Administrator login name for the PostgreSQL server"
-  type        = string
-}
-
-variable "administrator_password" {
-  description = "Administrator password for the PostgreSQL server"
+variable "admin_password" {
+  description = "The administrator password for the PostgreSQL Flexible Server."
   type        = string
   sensitive   = true
 }
 
 variable "sku_name" {
-  description = "The SKU name of the PostgreSQL server (e.g., 'Standard_D2s_v3')"
+  description = "The SKU of the PostgreSQL Flexible Server (e.g., B_Standard_B1ms, GP_Standard_D2s_v3)."
   type        = string
 }
 
 variable "storage_mb" {
-  description = "The maximum storage allowed for the PostgreSQL server (in MB)"
+  description = "The storage size in megabytes for the PostgreSQL Flexible Server."
   type        = number
 }
 
-variable "delegated_subnet_id" {
-  description = "ID of the delegated subnet for the PostgreSQL server"
+variable "subnet_id" {
+  description = "The ID of the delegated subnet for the PostgreSQL Flexible Server."
   type        = string
 }
 
-variable "backup_retention_days" {
-  description = "Number of days to retain backups"
-  type        = number
-  default     = 7
-}
-
-variable "allowed_ip_ranges" {
-  description = "List of allowed IP ranges for PostgreSQL firewall rules"
-  type        = list(string)
-  default     = []
-}
-
-variable "tags" {
-  description = "Tags to associate with the PostgreSQL server"
-  type        = map(string)
-  default     = {}
-}
-
-variable "database_subnet_id" {
-  description = "The ID of the subnet for the private endpoint"
+variable "database_name" {
+  description = "The name of the initial database to create on the PostgreSQL Flexible Server."
   type        = string
 }
 
-variable "storage_account_id" {
-  description = "The ID of the storage account to be used for private connection"
+variable "private_dns_zone_id" {
+  description = "The ID of the private DNS zone to associate with the PostgreSQL Flexible Server."
   type        = string
 }
 
-variable "virtual_network_id" {
-  description = "The ID of the virtuan network"
+variable "name" {
+  description = "The friendly name of the PostgreSQL Flexible Server."
   type        = string
 }
