@@ -1,30 +1,19 @@
+variable "storage_account_name" {
+  description = "The name of the Azure Storage Account. Must be globally unique, between 3 and 24 characters, and only contain lowercase letters and numbers."
+  type        = string
+}
+
 variable "resource_group_name" {
-  description = "The name of the Resource Group where the Storage Account will be deployed"
+  description = "The name of the Azure resource group where the storage account will be created."
+  type        = string
+}
+
+variable "container_name" {
+  description = "The name of the Azure Storage Container to be created."
   type        = string
 }
 
 variable "location" {
-  description = "The Azure region where the Storage Account will be deployed"
-  type        = string
-}
-
-variable "storage_account_name" {
-  description = "The name of the Storage Account"
-  type        = string
-}
-
-variable "storage_container_name" {
-  description = "The name of the Blob Storage Container"
-  type        = string
-}
-
-variable "container_access_type" {
-  description = "Access type for the Blob Storage Container (private, blob, or container)"
-  type        = string
-  default     = "blob"
-}
-
-variable "blob_storage_subnet_id" {
-  description = "L'ID du sous-réseau utilisé pour le Private Endpoint du Blob Storage"
+  description = "The Azure region where the storage account will be deployed."
   type        = string
 }

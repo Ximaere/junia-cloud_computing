@@ -1,38 +1,25 @@
-# Create the Storage Account
+# Définition d'un compte de stockage Azure
 resource "azurerm_storage_account" "storage_account" {
-  name                     = var.storage_account_name
-  location                 = var.location
-  resource_group_name      = var.resource_group_name
-  account_tier             = "Standard"
-  account_replication_type = "LRS" # Local Redundancy
+  resource_group_name      = var.resource_group_name         # Groupe de ressources dans lequel il est créé
+  name                     = var.storage_account_name        # Identifiant unique du compte
+  account_kind             = "StorageV2"                    # Type de compte pour un usage général
+  account_tier             = "Standard"                     # Niveau de service choisi
+  account_replication_type = "LRS"                          # Mode de réplication : stockage localement redondant
+  location                 = var.location                    # Région géographique
 }
 
-# Create a Blob Storage Container
+# Ajout d'un conteneur dans le compte de stockage
 resource "azurerm_storage_container" "storage_container" {
-  name                  = "api"
-  storage_account_name  = azurerm_storage_account.storage_account.name
-  container_access_type = var.container_access_type
+  name                  = var.container_name                # Identifiant du conteneur
+  storage_account_name  = azurerm_storage_account.storage_account.name # Référence au compte de stockage
+  container_access_type = "private"                         # Niveau d'accès : privé uniquement
 }
 
-# Upload the JSON file to the Blob Container
-resource "azurerm_storage_blob" "quotes_blob" {
-  name                   = "quotes.json"
-  source                 = "${path.module}/quotes.json"
-  storage_account_name   = azurerm_storage_account.storage_account.name
-  storage_container_name = azurerm_storage_container.storage_container.name
-  type                   = "Block"
-}
-
-resource "azurerm_private_endpoint" "blob_endpoint" {
-  name                = "blob-private-endpoint"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.blob_storage_subnet_id
-
-  private_service_connection {
-    name                           = "blob-connection"
-    private_connection_resource_id = azurerm_storage_account.storage_account.id
-    subresource_names              = ["blob"]
-    is_manual_connection = false
-  }
+# Téléchargement d'un fichier JSON dans le conteneur
+resource "azurerm_storage_blob" "json_blob" {
+  name                   = "quotes.json"                    # Nom du fichier blob dans Azure
+  storage_account_name   = azurerm_storage_account.storage_account.name # Lien avec le compte de stockage
+  storage_container_name = azurerm_storage_container.storage_container.name # Lien avec le conteneur
+  type                   = "Block"                          # Catégorie du blob (Block blob pour fichiers classiques)
+  source                 = "./modules/blob_storage/quotes.json"          # Chemin source vers le fichier local
 }
