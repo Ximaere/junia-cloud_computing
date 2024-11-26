@@ -1,14 +1,11 @@
-output "resource_group_name" {
-  description = "The name of the Resource Group"
-  value       = azurerm_resource_group.main.name
+output "storage_account_name" {
+  value = "${var.storage_account_name}${random_string.unique_suffix.result}"
 }
 
-output "app_service_url" {
-  description = "The default URL of the App Service"
-  value       = module.app_service.default_site_hostname
+output "app_service_name" {
+  value = "${var.app_service_name}${random_string.unique_suffix.result}"
 }
 
-output "storage_url" {
-  description = "The URL of the blob storage"
-  value       = module.blob_storage.storage_url
+output "name" {
+  value = "${var.name}${random_string.unique_suffix.result}"
 }

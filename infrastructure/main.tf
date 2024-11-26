@@ -3,74 +3,92 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-# Create the Resource Group
+resource "random_string" "unique_suffix" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
+# Définition du groupe de ressources dans Azure
 resource "azurerm_resource_group" "main" {
-  name     = var.resource_group_name
-  location = var.location
+  name     = var.resource_group_name   # Nom du groupe de ressources
+  location = var.location              # Localisation du groupe de ressources
 }
 
-# Call the App Service module
-module "app_service" {
-  source                = "./modules/app_service"
-  resource_group_name   = azurerm_resource_group.main.name
-  location              = azurerm_resource_group.main.location
-  app_service_name      = var.app_service_name
-  service_plan_name     = var.service_plan_name
-  linux_fx_version      = var.linux_fx_version
-  service_app_subnet_id = module.vnet.app_service_subnet_id
+# Module pour configurer le réseau virtuel (VNet) et les sous-réseaux
+module "network" {
+  source               = "./modules/network"    # Chemin vers le module réseau
+  vnet_name            = var.vnet_name          # Nom du réseau virtuel
+  resource_group_name  = var.resource_group_name # Groupe de ressources associé
+  address_space        = var.address_space      # Espace d'adressage du réseau virtuel
+  location             = var.location           # Localisation du réseau
+  subnet_name          = var.subnet_name        # Nom du sous-réseau
+  subnet_address_prefixes = var.subnet_address_prefixes # Plages d'adresses du sous-réseau
+
+  # Dépendance : ce module sera déployé après le groupe de ressources
+  depends_on = [azurerm_resource_group.main]
 }
 
-# Call the Blob Storage module
+# Module pour configurer un stockage Blob
 module "blob_storage" {
-  source                 = "./modules/blob_storage"
-  resource_group_name    = azurerm_resource_group.main.name
-  location               = azurerm_resource_group.main.location
-  storage_account_name   = var.storage_account_name
-  storage_container_name = var.storage_container_name
-  container_access_type  = var.container_access_type
-  blob_storage_subnet_id = module.vnet.blob_storage_subnet_id
+  source               = "./modules/blob_storage" # Chemin vers le module de stockage Blob
+  storage_account_name = "${var.storage_account_name}${random_string.unique_suffix.result}" # Nom du compte de stockage avec une partie aléatoire
+  resource_group_name  = var.resource_group_name  # Groupe de ressources associé
+  container_name       = var.container_name      # Nom du conteneur Blob
+  location             = var.location            # Localisation du stockage
+
+  # Dépendance : ce module sera déployé après le groupe de ressources
+  depends_on = [azurerm_resource_group.main]
 }
 
-module "postgresql_server" {
-  source                 = "./modules/postgresql_server"
-  resource_group_name    = azurerm_resource_group.main.name
-  location               = azurerm_resource_group.main.location
-  storage_account_id     = azurerm_storage_account.storage_account.id
-  postgresql_server_name = var.postgresql_server_name
-  administrator_login    = var.administrator_login
-  administrator_password = var.administrator_password
-  sku_name               = "B_Standard_B2ms"
-  storage_mb             = 32768
-  virtual_network_id     = module.vnet.vnet_id
-  database_subnet_id     = module.vnet.database_subnet_id
-  delegated_subnet_id    = "/subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/providers/Microsoft.Network/virtualNetworks/{vnet-name}/subnets/{subnet-name}"
-  backup_retention_days  = 7
-  allowed_ip_ranges      = ["10.0.1.0", "10.0.1.255"]
-  tags                   = {
-    environment = "dev"
-    project     = "example-project"
-  }
+# Module pour configurer une base de données
+module "database" {
+  source               = "./modules/postgresql_server"    # Chemin vers le module base de données
+  server_name          = var.server_name         # Nom du serveur de base de données
+  database_name        = var.database_name       # Nom de la base de données
+  resource_group_name  = azurerm_resource_group.main.name # Groupe de ressources associé
+  location             = azurerm_resource_group.main.location # Localisation
+  sku_name             = var.sku_name            # Configuration SKU pour la base de données
+  storage_mb           = var.storage_mb          # Taille de stockage (en Mo)
+  subnet_id            = module.network.postgresql_subnet_id # ID du sous-réseau associé
+  admin_login          = var.admin_login         # Nom d'utilisateur admin pour la base de données
+  admin_password       = var.admin_password      # Mot de passe admin
+  
+  private_dns_zone_id  = module.network.private_dns_zone_id # Zone DNS privée associée
+  name                 = "${var.name}${random_string.unique_suffix.result}"              # Nom de la ressource
 }
 
-resource "azurerm_storage_account" "storage_account" {
-  name                     = "juniastorageaccountbgm2"
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
+# Module pour configurer un service applicatif
+module "app_service" {
+  source                 = "./modules/app_service"          # Chemin vers le module App Service
+  app_service_plan_name  = var.app_service_plan_name        # Nom du plan App Service
+  app_service_name       = "${var.app_service_name}${random_string.unique_suffix.result}"            # Nom du service applicatif
+  resource_group_name    = var.resource_group_name         # Groupe de ressources associé
+  location               = var.location                    # Localisation
+  subnet_id              = module.network.app_service_subnet_id # ID du sous-réseau pour l'App Service
 
-module "vnet" {
-  source = "./modules/vnet"
+  # Dépendance : ce module sera déployé après le groupe de ressources
+  depends_on             = [azurerm_resource_group.main]
 
-  resource_group_name        = var.resource_group_name
-  location                   = var.location
-  vnet_name                  = "juniacloudcomputingvnetbgm2"
-  address_space              = ["10.0.0.0/16"]
-  app_service_subnet_name    = "app-service-subnet"
-  app_service_subnet_prefix  = "10.0.1.0/24"
-  blob_storage_subnet_name   = "blob-storage-subnet"
-  blob_storage_subnet_prefix = "10.0.2.0/24"
-  database_subnet_name       = "database-subnet"
-  database_subnet_prefix     = "10.0.3.0/24" 
+  # Configuration Docker pour le service applicatif
+  docker_image             = var.docker_image                # Image Docker
+  docker_registry_username = var.docker_registry_username    # Nom d'utilisateur du registre Docker
+  docker_registry_password = var.docker_registry_password    # Mot de passe du registre Docker
+  docker_registry_url      = var.docker_registry_url         # URL du registre Docker
+  
+
+  # Configuration de l'intégration avec le stockage Blob
+  storage_account_id = module.blob_storage.storage_account_id # ID du compte de stockage
+  storage_url        = module.blob_storage.storage_url     # URL du stockage
+
+  # Variables d'environnement pour la base de données
+  database_host     = module.database.postgresql_host      # Hôte de la base de données
+  database_port     = module.database.postgresql_port      # Port de la base de données
+  database_name     = module.database.server_name          # Nom du serveur
+  database_user     = var.admin_login                      # Nom d'utilisateur
+  database_password = var.admin_password                   # Mot de passe
+
+  /*# Configuration New Relic pour le monitoring
+  new_relic_app_name = var.new_relic_app_name              # Nom de l'application dans New Relic
+  new_relic_license_key = var.new_relic_license_key        # Clé de licence New Relic*/
 }
